@@ -31,7 +31,7 @@ const Navigation = () => {
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-glow rounded-xl flex items-center justify-center">
               <Clock className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-serif font-medium">Time Capsule</span>
+            <span className="text-xl font-serif font-medium">Living Heirloom</span>
           </div>
 
           {/* Desktop Menu */}

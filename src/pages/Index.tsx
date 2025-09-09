@@ -81,14 +81,14 @@ const Index = () => {
           
           <div className="animate-fade-up animate-stagger-1">
             <p className="text-emotion max-w-3xl mx-auto mb-12">
-              Create beautiful time capsule messages that capture your thoughts, wisdom, and love. 
+              Create beautiful living heirloom messages that capture your thoughts, wisdom, and love. 
               Our AI helps you craft meaningful messages that will touch hearts across time.
             </p>
           </div>
 
           <div className="animate-fade-up animate-stagger-2 flex flex-col sm:flex-row gap-6 justify-center">
             <Button size="lg" className="btn-hero group" onClick={() => window.location.href = '/create'}>
-              Start Your Time Capsule
+              Start Your Living Heirloom
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button variant="outline" size="lg" className="btn-gentle" onClick={() => window.location.href = '/capsules'}>
@@ -108,7 +108,7 @@ const Index = () => {
               </Card>
               
               <Card className="card-memory absolute -right-40 top-12 w-80 hidden lg:block animate-float" style={{ animationDelay: '1s' }}>
-                <p className="text-sm italic mb-3">"I created a time capsule for my wedding anniversary. My husband was moved to tears."</p>
+                <p className="text-sm italic mb-3">"I created a living heirloom for my wedding anniversary. My husband was moved to tears."</p>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-gradient-to-br from-accent to-accent-glow rounded-full"></div>
                   <span className="text-sm font-medium">Michael R.</span>
@@ -225,7 +225,7 @@ const Index = () => {
                   <h3 className="text-2xl font-serif font-medium mb-4 text-center">{type.title}</h3>
                   <p className="text-muted-foreground text-center leading-relaxed">{type.description}</p>
                   <Button className="w-full mt-8 btn-gentle" onClick={() => window.location.href = '/create'}>
-                    Create This Capsule
+                    Create This Heirloom
                   </Button>
                 </Card>
               );
@@ -242,7 +242,7 @@ const Index = () => {
               Your Story Deserves to <span className="text-primary">Live Forever</span>
             </h2>
             <p className="text-emotion mb-12 max-w-2xl mx-auto">
-              Don't let precious memories fade away. Create your first time capsule today and give the gift of your voice to tomorrow.
+              Don't let precious memories fade away. Create your first living heirloom today and give the gift of your voice to tomorrow.
             </p>
             <Button size="lg" className="btn-hero group" onClick={() => window.location.href = '/create'}>
               Begin Your Journey
