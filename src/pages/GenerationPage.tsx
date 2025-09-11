@@ -9,77 +9,79 @@ const GenerationPage = () => {
   const [isGenerating, setIsGenerating] = useState(true);
   const [selectedVersion, setSelectedVersion] = useState(0);
   const [toneAdjustment, setToneAdjustment] = useState([7]);
-  const [lengthPreference, setLengthPreference] = useState('medium');
+  const [lengthPreference, setLengthPreference] = useState<'short' | 'medium' | 'long'>('medium');
+  const [versions, setVersions] = useState<string[]>([]);
+  const [tone, setTone] = useState<'gentle' | 'warm' | 'thoughtful' | 'inspiring'>('warm');
 
-  // Simulated generated versions
-  const generatedVersions = [
-    {
-      title: "Heartfelt & Personal",
-      tone: "warm",
-      content: `My dearest one,
-
-As I write this, my heart is full of all the memories we've shared and all the dreams I hold for your future. I want you to know that the moment you smiled at me during our quiet Sunday morning together remains one of my most treasured memories. It was in that simple, perfect moment that I realized how much joy you bring to this world.
-
-If I could share one piece of wisdom with you, it would be this: Trust your heart, but don't be afraid to let your mind guide you too. Life will present you with countless choices, and sometimes the path forward won't be clear. But remember that every experience, even the difficult ones, shapes you into the remarkable person you're becoming.
-
-What I hope you'll always remember about me is not just the words I've spoken, but the love that lives behind them. I want you to feel that love like a warm embrace, even when I'm not there to give you one in person.
-
-For your future, I dream of you finding work that feeds your soul, relationships that nurture your spirit, and adventures that expand your world. But most of all, I hope you'll always remember how deeply you are loved.
-
-With all my love,
-Your devoted [Name]`
-    },
-    {
-      title: "Wise & Reflective", 
-      tone: "thoughtful",
-      content: `Dear Future You,
-
-Time has a way of teaching us what truly matters, and as I reflect on the lessons life has gifted me, I find myself wanting to share these discoveries with you.
-
-The moment that still brings warmth to my heart happened on an ordinary Tuesday when we sat together in comfortable silence, watching the world wake up. In that stillness, I understood that the most profound connections aren't always built from grand gestures, but from the accumulation of quiet, authentic moments shared between souls who truly see each other.
-
-The wisdom I've gathered over the years whispers this truth: Courage isn't the absence of fear—it's the decision that something else is more important than fear. Whether you're facing a crossroads in your career, relationships, or personal growth, remember that the path of authenticity, though sometimes more challenging, always leads to a life you can be proud of.
-
-I hope that when you think of me, you'll remember someone who believed in your infinite potential and who saw in you a light that could illuminate not just your own path, but the paths of others fortunate enough to know you.
-
-The future I envision for you is rich with purpose, deep connections, and the kind of joy that comes from living in alignment with your truest self. Trust the journey, even when the destination isn't yet clear.
-
-With profound love and endless faith in you,
-[Your Name]`
-    },
-    {
-      title: "Poetic & Inspirational",
-      tone: "inspiring", 
-      content: `Beloved Soul,
-
-Words feel both too small and perfectly vast as I try to capture what lives in my heart for you. Like morning light spilling through curtains, some moments illuminate everything—and that Sunday when your laughter filled the kitchen while we made pancakes together is painted in gold in my memory. In that ordinary magic, I glimpsed the extraordinary spirit you carry.
-
-If wisdom could be distilled into starlight, I would offer you this constellation of truth: You are both the question and the answer you've been seeking. Life will ask you to choose between safety and growth, between fitting in and standing out, between settling and soaring. Choose the path that makes your soul sing, even if your voice shakes while you're singing.
-
-When the world grows quiet and you wonder what legacy I hoped to leave in your heart, remember this: You are loved beyond measure, capable beyond imagination, and destined for a kind of joy that transforms not just your life, but every life you touch.
-
-I see your tomorrow painted in shades of courage and kindness, adventure and peace, success and service. May you chase dreams that are worthy of your magnificent spirit, and may you always know that somewhere in the threads of time, someone believes in every beautiful thing you're becoming.
-
-Until we meet again in whatever form love takes,
-Forever yours,
-[Your Name]`
-    }
-  ];
-
-  const currentVersion = generatedVersions[selectedVersion];
+  const titles = [
+    { title: 'Heartfelt & Personal', tone: 'warm' },
+    { title: 'Wise & Reflective', tone: 'thoughtful' },
+    { title: 'Poetic & Inspirational', tone: 'inspiring' },
+  ] as const;
+  const currentVersion = versions[selectedVersion] || '';
 
   useEffect(() => {
-    // Simulate generation process
-    const timer = setTimeout(() => {
-      setIsGenerating(false);
-    }, 3000);
+    const loadAndGenerate = async () => {
+      setIsGenerating(true);
+      let answers: Record<string, string> | null = null;
+      try {
+        const raw = localStorage.getItem('tc_answers');
+        if (raw) answers = JSON.parse(raw);
+      } catch {}
 
-    return () => clearTimeout(timer);
+      try {
+        const resp = await fetch('http://localhost:3001/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            answers: answers || {},
+            tone,
+            length: lengthPreference,
+            n: 3,
+          }),
+        });
+        if (!resp.ok) throw new Error(await resp.text());
+        const data = await resp.json();
+        const v: string[] = data?.versions || [];
+        setVersions(v.length ? v : ['No content generated. Try again.']);
+      } catch (e) {
+        setVersions(['Generation failed. Please ensure the local AI server is running.']);
+        // eslint-disable-next-line no-console
+        console.error('Generation error', e);
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+    loadAndGenerate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleRegenerate = () => {
+  const handleRegenerate = async () => {
     setIsGenerating(true);
-    setTimeout(() => setIsGenerating(false), 2000);
+    try {
+      const raw = localStorage.getItem('tc_answers');
+      const answers = raw ? JSON.parse(raw) : {};
+      const resp = await fetch('http://localhost:3001/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          answers,
+          tone,
+          length: lengthPreference,
+          n: 3,
+        }),
+      });
+      if (!resp.ok) throw new Error(await resp.text());
+      const data = await resp.json();
+      setVersions(data?.versions || []);
+      setSelectedVersion(0);
+    } catch (e) {
+      setVersions(['Generation failed. Please ensure the local AI server is running.']);
+      // eslint-disable-next-line no-console
+      console.error('Regenerate error', e);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   if (isGenerating) {
@@ -141,7 +143,7 @@ Forever yours,
             <div className="mb-6">
               <h2 className="text-2xl font-serif font-medium mb-4">Choose Your Voice</h2>
               <div className="grid md:grid-cols-3 gap-4">
-                {generatedVersions.map((version, index) => (
+                {titles.map((info, index) => (
                   <Card 
                     key={index}
                     className={`p-4 cursor-pointer transition-all ${
@@ -151,11 +153,11 @@ Forever yours,
                     }`}
                     onClick={() => setSelectedVersion(index)}
                   >
-                    <h3 className="font-medium mb-2">{version.title}</h3>
+                    <h3 className="font-medium mb-2">{info.title}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {version.tone === 'warm' && 'Personal and intimate tone'}
-                      {version.tone === 'thoughtful' && 'Reflective and wise approach'}
-                      {version.tone === 'inspiring' && 'Poetic and uplifting language'}
+                      {info.tone === 'warm' && 'Personal and intimate tone'}
+                      {info.tone === 'thoughtful' && 'Reflective and wise approach'}
+                      {info.tone === 'inspiring' && 'Poetic and uplifting language'}
                     </p>
                   </Card>
                 ))}
@@ -166,7 +168,7 @@ Forever yours,
             <Card className="card-preview">
               <div className="prose prose-lg max-w-none">
                 <div className="whitespace-pre-line font-light leading-relaxed text-lg">
-                  {currentVersion.content}
+                  {currentVersion}
                 </div>
               </div>
             </Card>
@@ -184,7 +186,14 @@ Forever yours,
                   <div className="space-y-2">
                     <Slider
                       value={toneAdjustment}
-                      onValueChange={setToneAdjustment}
+                      onValueChange={(v) => {
+                        setToneAdjustment(v);
+                        const level = v[0];
+                        if (level <= 3) setTone('gentle');
+                        else if (level <= 6) setTone('warm');
+                        else if (level <= 8) setTone('thoughtful');
+                        else setTone('inspiring');
+                      }}
                       max={10}
                       min={1}
                       step={1}
@@ -200,7 +209,7 @@ Forever yours,
                 {/* Length Preference */}
                 <div>
                   <label className="block text-sm font-medium mb-3">Message Length</label>
-                  <Select value={lengthPreference} onValueChange={setLengthPreference}>
+                  <Select value={lengthPreference} onValueChange={(v) => setLengthPreference(v as any)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -249,18 +258,18 @@ Forever yours,
             {/* Preview Stats */}
             <Card className="card-memory">
               <h3 className="text-lg font-medium mb-4">Message Details</h3>
-              <div className="space-y-3 text-sm">
+                <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Word Count</span>
-                  <span>{currentVersion.content.split(' ').length} words</span>
+                  <span>{currentVersion.split(' ').filter(Boolean).length} words</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Reading Time</span>
-                  <span>~{Math.ceil(currentVersion.content.split(' ').length / 200)} min</span>
+                  <span>~{Math.ceil(currentVersion.split(' ').filter(Boolean).length / 200)} min</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Emotional Tone</span>
-                  <span className="capitalize">{currentVersion.tone}</span>
+                  <span className="capitalize">{tone}</span>
                 </div>
               </div>
             </Card>

@@ -91,9 +91,12 @@ const InterviewFlow = () => {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
       } else {
-        // Navigate to generation page
-        console.log('All answers collected:', { ...answers, [currentQuestion.id]: currentAnswer });
-        // window.location.href = '/generate';
+        // Persist answers and navigate to generation page
+        const all = { ...answers, [currentQuestion.id]: currentAnswer };
+        try {
+          localStorage.setItem('tc_answers', JSON.stringify(all));
+        } catch {}
+        window.location.href = '/generate';
       }
     }
   };

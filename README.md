@@ -1,22 +1,18 @@
-# Welcome to your Lovable project
+# Living Heirloom
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/34ea924a-6ba9-468d-8950-325f28ef10cf
+**URL**: 
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/34ea924a-6ba9-468d-8950-325f28ef10cf) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -62,12 +58,30 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/34ea924a-6ba9-468d-8950-325f28ef10cf) and click on Share -> Publish.
+Deploy using your preferred platform or static hosting service.
 
-## Can I connect a custom domain to my Lovable project?
+## Can I connect a custom domain?
 
 Yes, you can!
 
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Refer to your hosting provider's documentation for custom domain setup.
+
+## Local AI generation (OSS 20B)
+
+This project includes a small API server (`server/index.ts`) that calls any OpenAI-compatible endpoint (e.g., vLLM, Text Generation Inference, LM Studio, or Ollama OpenAI API). Configure it via environment variables:
+
+- OPENAI_BASE_URL (default `http://localhost:11434/v1`)
+- OPENAI_API_KEY (if your server requires a key)
+- MODEL (default `gpt-neox-20b`)
+- PORT (default `3001`)
+
+Run both client and server during development:
+
+```powershell
+npm install
+npm run dev:all
+```
+
+Ensure your OpenAI-compatible server is running a 20B-class OSS model (e.g., GPT-NeoX-20B) and accessible at `OPENAI_BASE_URL`.
