@@ -134,7 +134,8 @@ const Index = () => {
               <hr className="rule-gold mb-8 w-16" />
               <p className="eyebrow mb-4 !text-[hsl(var(--paper-on-ink))]/60">Part III — The seal</p>
               <h2 className="text-display text-3xl md:text-4xl">
-                Write it today. Seal it for the day it's needed.
+                Write it today.
+                <span className="block">Seal it for the day it's needed.</span>
               </h2>
               <p className="mt-4 max-w-[52ch] text-lg leading-relaxed text-[hsl(var(--paper-on-ink))]/70">
                 Give your letter an opening date and it waits — quietly, patiently — until the

@@ -73,6 +73,7 @@ const ListenButton = ({ text, className }: ListenButtonProps) => {
     }
 
     setIsLoading(true);
+    toast('Preparing the reading — this can take a minute or two on most machines.');
     try {
       const blob = await synthesize(text, voiceId);
 
