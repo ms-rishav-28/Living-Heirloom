@@ -1,0 +1,7 @@
+# Optional Chatterbox sidecar for "letters in your own voice".
+# chatterbox-tts (MIT) pulls in torch/torchaudio; expect a multi-GB install.
+# An NVIDIA GPU is strongly recommended; CPU works but is much slower.
+chatterbox-tts
+fastapi
+uvicorn[standard]
+python-multipart
