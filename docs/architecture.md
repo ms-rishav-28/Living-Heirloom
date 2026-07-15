@@ -66,8 +66,12 @@ to `server/data/outbox/` — the documented development fallback. Failures recor
 
 A single `TTSProvider` interface (`server/voice/provider.ts`) with three adapters;
 selection order: explicit `TTS_PROVIDER` env → kokoro if its runtime loads → none.
-Synthesized audio is cached by content hash in `server/data/audio/`. Engine details,
-setup, and licensing: [voice.md](voice.md).
+Synthesized audio is cached by content hash in `server/data/audio/`. Kokoro's model
+loading and inference run in a dedicated worker thread
+(`kokoro.worker.mjs`) — CPU synthesis of a full letter can take minutes, and
+running it on the main thread would stall every other request, including the
+delivery scheduler's tick, for that whole time. Engine details, setup, and
+licensing: [voice.md](voice.md).
 
 ## Frontend layers
 

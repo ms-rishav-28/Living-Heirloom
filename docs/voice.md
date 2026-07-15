@@ -16,6 +16,13 @@ With no configuration, the server tries **Kokoro-82M** through the
 - Preset voices only (50+ across several languages) — Kokoro cannot clone a voice.
 - Synthesized audio is cached in `server/data/audio/`, so replaying a letter is
   instant.
+- Model loading and synthesis run in a dedicated worker thread
+  (`server/voice/adapters/kokoro.worker.mjs`), not on the API server's main
+  thread. A full letter can take a minute or more on CPU; without the worker
+  that would freeze every other request — health checks, capsule reads, the
+  delivery scheduler's cron tick — for the whole duration. Each synthesis
+  request has a 4-minute timeout, and the worker is respawned automatically if
+  it crashes.
 
 The frontend shows a **Listen** button wherever a letter appears (the recipient's
 letter page, the library's read dialog, the draft preview). If no provider is
@@ -54,6 +61,10 @@ this machine — treat any speed numbers you read elsewhere as unverified here.
 Set `TTS_PROVIDER=elevenlabs` and `ELEVENLABS_API_KEY`. The adapter uses ElevenLabs'
 REST API for voice listing and synthesis. Notes: the free tier is limited and voice
 cloning requires a paid plan; the key is read from the environment and never logged.
+
+Two optional overrides, rarely needed: `ELEVENLABS_BASE_URL` (default
+`https://api.elevenlabs.io`) and `ELEVENLABS_MODEL_ID` (default
+`eleven_multilingual_v2`).
 
 ## Licensing
 
